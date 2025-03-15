@@ -5,7 +5,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import dotenv from "dotenv";
+import 'dotenv/config';
 
 // Load environment variables
 dotenv.config();
