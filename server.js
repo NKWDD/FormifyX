@@ -16,6 +16,11 @@ const SECRET_KEY = process.env.JWT_SECRET;
 const MONGO_URI = process.env.MONGO_URI;
 const FRONTEND_URL = process.env.FRONTEND_URL;
 
+// Add this route at the end of your server.js file, before app.listen()
+app.get("/", (req, res) => {
+  res.send("Welcome to FormifyX Backend!");
+});
+
 // Middleware
 app.use(
   cors({
@@ -174,6 +179,6 @@ app.post("/subscribe", async (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on http://localhost:${PORT}`);
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`🚀 Server is running on http://0.0.0.0:${PORT}`);
 });
