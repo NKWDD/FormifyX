@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FileText, CheckCircle, Zap, ArrowRight, ChevronLeft, Send, Building, Users, Trophy, Menu, X } from 'lucide-react';
+import iphoneView from './assets/images/iphoneview.svg'; // Import the image
 
 interface FormData {
   firstName: string;
@@ -58,11 +59,10 @@ function App() {
       setMessage('Something went wrong. Please try again.'); // Handle network errors
     }
   };
-  // Check if the user is already logged in on page load
+
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      // Validate the token and fetch user data
       fetch('http://localhost:5000/validate-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -101,15 +101,12 @@ function App() {
       const data = await response.json();
       
       if (response.ok) {
-        // Display success message
         setSuccessMessage('Account created successfully!');
-        // Optional: redirect after a delay
         setTimeout(() => {
           setShowSignUp(false);
           setShowSignIn(true);
         }, 2000);
       } else {
-        // Display the error message from the server
         setErrorMessage(data.message || 'Signup failed');
       }
     } catch (error) {
@@ -131,14 +128,14 @@ function App() {
   
       if (response.ok) {
         setIsLoggedIn(true);
-        setUser({ firstName: data.firstName, lastName: data.lastName }); // Store user data
-        localStorage.setItem('token', data.token); // Save the token
+        setUser({ firstName: data.firstName, lastName: data.lastName });
+        localStorage.setItem('token', data.token);
         setShowSignIn(false);
       } else {
-        setLoginError(data.message || 'Email or password is wrong'); // Set error message
+        setLoginError(data.message || 'Email or password is wrong');
       }
     } catch (error) {
-      setLoginError('Something went wrong. Please try again.'); // Set error message
+      setLoginError('Something went wrong. Please try again.');
     }
   };
 
@@ -320,7 +317,6 @@ function App() {
               Sign In
             </button>
   
-            {/* Display login error message */}
             {loginError && (
               <p className="text-center text-red-500 mt-4">{loginError}</p>
             )}
@@ -330,8 +326,8 @@ function App() {
               <button
                 type="button"
                 onClick={() => {
-                  setShowSignIn(false); // Close the sign-in form
-                  setShowSignUp(true);  // Open the sign-up form
+                  setShowSignIn(false);
+                  setShowSignUp(true);
                 }}
                 className="text-blue-600 font-medium hover:text-blue-700 focus:outline-none"
               >
@@ -346,94 +342,87 @@ function App() {
 
   return (
     <div className="bg-gradient-to-br from-white via-blue-50 to-blue-100">
-      {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md z-50 border-b border-gray-100">
-  <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="flex items-center justify-between h-16">
-      <div className="flex items-center space-x-8">
-        <div className="flex items-center space-x-2">
-          <FileText className="h-8 w-8 text-blue-600" />
-          <span className="text-2xl font-bold text-gray-900">FormifyX</span>
+        <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-8">
+              <div className="flex items-center space-x-2">
+                <FileText className="h-8 w-8 text-blue-600" />
+                <span className="text-2xl font-bold text-gray-900">FormifyX</span>
+              </div>
+              <div className="hidden md:flex items-center space-x-6">
+              </div>
+            </div>
+            <div className="flex items-center space-x-4">
+              {isLoggedIn ? (
+                <>
+                  <p className="text-gray-900">Welcome, {user?.firstName} {user?.lastName}</p>
+                  <button 
+                    onClick={handleLogout}
+                    className="hidden md:inline-block px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => setShowSignIn(true)}
+                    className="hidden md:inline-block px-6 py-2 text-blue-600 font-medium hover:text-blue-700"
+                  >
+                    Sign In
+                  </button>
+                  <button 
+                    onClick={() => setShowSignUp(true)}
+                    className="hidden md:inline-block px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Get Started
+                  </button>
+                </>
+              )}
+              <button 
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="md:hidden p-2 text-gray-600 hover:text-gray-900"
+              >
+                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+              </button>
+            </div>
+          </div>
         </div>
-        <div className="hidden md:flex items-center space-x-6">
-        </div>
-      </div>
-      <div className="flex items-center space-x-4">
-        {isLoggedIn ? (
-          <>
-            {/* Welcome text visible in both desktop and mobile */}
-            <p className="text-gray-900">Welcome, {user?.firstName} {user?.lastName}</p>
-            {/* Logout button visible on desktop */}
-            <button 
-              onClick={handleLogout}
-              className="hidden md:inline-block px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <button 
-              onClick={() => setShowSignIn(true)}
-              className="hidden md:inline-block px-6 py-2 text-blue-600 font-medium hover:text-blue-700"
-            >
-              Sign In
-            </button>
-            <button 
-              onClick={() => setShowSignUp(true)}
-              className="hidden md:inline-block px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              Get Started
-            </button>
-          </>
-        )}
-        {/* Hamburger menu button for mobile */}
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden p-2 text-gray-600 hover:text-gray-900"
-        >
-          {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-        </button>
-      </div>
-    </div>
-  </div>
 
-  {/* Mobile Menu */}
-  {isMobileMenuOpen && (
-    <div className="md:hidden bg-white border-t border-gray-100">
-      <div className="px-4 py-2 space-y-2">
-        {isLoggedIn ? (
-          <>
-            {/* Logout button visible in mobile menu */}
-            <button 
-              onClick={handleLogout}
-              className="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              Logout
-            </button>
-          </>
-        ) : (
-          <>
-            <button 
-              onClick={() => setShowSignIn(true)}
-              className="block w-full text-left px-4 py-2 text-blue-600 font-medium hover:text-blue-700"
-            >
-              Sign In
-            </button>
-            <button 
-              onClick={() => setShowSignUp(true)}
-              className="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-            >
-              Get Started
-            </button>
-          </>
+        {isMobileMenuOpen && (
+          <div className="md:hidden bg-white border-t border-gray-100">
+            <div className="px-4 py-2 space-y-2">
+              {isLoggedIn ? (
+                <>
+                  <button 
+                    onClick={handleLogout}
+                    className="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button 
+                    onClick={() => setShowSignIn(true)}
+                    className="block w-full text-left px-4 py-2 text-blue-600 font-medium hover:text-blue-700"
+                  >
+                    Sign In
+                  </button>
+                  <button 
+                    onClick={() => setShowSignUp(true)}
+                    className="block w-full text-left px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                  >
+                    Get Started
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
         )}
-      </div>
-    </div>
-  )}
-</nav>
+      </nav>
 
-      {/* Hero Section */}
       <div className="max-w-8xl mx-auto px-4 sm:px-6 lg:px-8 pt-40 pb-24">
         <div className="flex flex-col lg:flex-row items-center justify-between">
           <div className="lg:w-1/2 lg:pr-12">
@@ -456,7 +445,7 @@ function App() {
           </div>
           <div className="lg:w-2/3 mt-12 lg:mt-0 transform scale-100">
             <img 
-              src="src/components/iphoneview.svg" 
+              src={iphoneView} // Use the imported image
               alt="iPhone 16 Pro showing FormifyX invoice app" 
               className="w-full"
             />
