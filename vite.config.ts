@@ -3,8 +3,5 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: '/FormifyX/', // Replace with your GitHub repo name
-  optimizeDeps: {
-    exclude: ['lucide-react'],
-  },
+  base: '/FormifyX/',  // 👈 Important! Replace with your GitHub repo name
 })
