@@ -41,7 +41,7 @@ function App() {
     }
   
     try {
-      const response = await fetch('http://localhost:5000/subscribe', {
+      const response = await fetch('https://formifyx-backend.onrender.com/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -63,7 +63,7 @@ function App() {
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
-      fetch('http://localhost:5000/validate-token', {
+      fetch('https://formifyx-backend.onrender.com/validate-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       })
@@ -92,7 +92,7 @@ function App() {
     setSuccessMessage(''); // Clear any previous success messages
     
     try {
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch('https://formifyx-backend.onrender.com/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -119,7 +119,7 @@ function App() {
     setLoginError(null); // Clear any previous error
   
     try {
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch('https://formifyx-backend.onrender.com/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: formData.email, password: formData.password }),

@@ -19,7 +19,7 @@ const FRONTEND_URL = process.env.FRONTEND_URL;
 // Middleware
 app.use(
   cors({
-    origin: FRONTEND_URL, // Use frontend URL from environment
+    origin: 'https://formifyx.nl', // Allow requests from the frontend domain
     credentials: true,
   })
 );
