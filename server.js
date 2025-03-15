@@ -5,10 +5,10 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import 'dotenv/config';
+import 'dotenv/config'; // Correct import for dotenv with ES modules
 
 // Load environment variables
-dotenv.config();
+// dotenv.config(); // Remove this line
 
 const app = express();
 const PORT = process.env.PORT || 5000;
