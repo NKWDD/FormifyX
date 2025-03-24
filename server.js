@@ -22,12 +22,17 @@ app.get("/", (req, res) => {
 });
 
 // Middleware
-app.use(
-  cors({
-    origin: 'https://formifyx.nl', // Allow requests from the frontend domain
-    credentials: true,
-  })
-);
+// Replace your current CORS middleware with this:
+app.use(cors({
+  origin: [
+    'https://formifyx.nl', // Your production domain
+    'http://localhost:5173', // Your local development
+    'https://formifyx.onrender.com' // Your Render domain (if needed)
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 app.use(bodyParser.json());
 
 // Connect to MongoDB
@@ -179,6 +184,6 @@ app.post("/subscribe", async (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`🚀 Server is running on http://0.0.0.0:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`🚀 Server is running on ${PORT}`);
 });
