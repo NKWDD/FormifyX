@@ -21,19 +21,39 @@ app.get("/", (req, res) => {
   res.send("Welcome to FormifyX Backend!");
 });
 
-// Middleware
-// Replace your current CORS middleware with this:
-app.use(cors({
-  origin: [
-    'https://formifyx.nl', // Your production domain
-    'http://localhost:5173', // Your local development
-    'https://formifyx.onrender.com' // Your Render domain (if needed)
-  ],
+const corsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = [
+      'https://formifyx.nl', // Your production domain
+      'http://localhost:5173', // Local development
+      'https://formifyx-frontend.onrender.com' // If you have a frontend on Render
+    ];
+    
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
-}));
-app.use(bodyParser.json());
+  credentials: true,
+  optionsSuccessStatus: 200 // For legacy browser support
+};
+
+// Add this after CORS middleware
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
+  );
+  next();
+});
+
+// Handle preflight requests for all routes
+app.options('*', cors(corsOptions));
 
 // Connect to MongoDB
 mongoose
