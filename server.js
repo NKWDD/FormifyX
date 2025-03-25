@@ -5,67 +5,61 @@ import mongoose from "mongoose";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import nodemailer from "nodemailer";
-import 'dotenv/config';
+import 'dotenv/config'; // Correct import for dotenv with ES modules
+
+// Load environment variables
+// dotenv.config(); // Remove this line
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const SECRET_KEY = process.env.JWT_SECRET;
 const MONGO_URI = process.env.MONGO_URI;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
-// Enhanced CORS configuration
-const allowedOrigins = [
-  'https://formifyx.nl',
-  'http://localhost:5173',
-  'https://formifyx-frontend.onrender.com'
-];
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error(`Origin ${origin} not allowed by CORS`));
-    }
-  },
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
-  credentials: true,
-  optionsSuccessStatus: 200,
-  preflightContinue: false
-};
-
-// Apply CORS middleware first
-app.use(cors(corsOptions));
-
-// Then apply body parser middleware
-app.use(bodyParser.json({ limit: '10mb' }));
-app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
-
-// Handle preflight requests
-app.options('*', cors(corsOptions));
-
-// Custom headers middleware
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (origin && allowedOrigins.includes(origin)) {
-    res.setHeader('Access-Control-Allow-Origin', origin);
-  }
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, Accept');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  next();
+// Add this route at the end of your server.js file, before app.listen()
+app.get("/", (req, res) => {
+  res.send("Welcome to FormifyX Backend!");
 });
 
+// Middleware
+// Replace your current CORS middleware with this:
+app.use(cors({
+  origin: [
+    'https://formifyx.nl', // Your production domain
+    'http://localhost:5173', // Your local development
+    'https://formifyx.onrender.com' // Your Render domain (if needed)
+  ],
+
+
+
+
+
+
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+app.use(bodyParser.json());
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Connect to MongoDB
-mongoose.connect(MONGO_URI, { 
-  useNewUrlParser: true, 
-  useUnifiedTopology: true 
-})
-.then(() => console.log("✅ Connected to MongoDB Atlas"))
-.catch((err) => console.error("❌ Failed to connect to MongoDB Atlas", err));
+mongoose
+  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => console.error("❌ Failed to connect to MongoDB Atlas", err));
 
 // User Schema
 const userSchema = new mongoose.Schema({
@@ -77,32 +71,6 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model("User", userSchema);
 
-// User Profile Schema
-const userProfileSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  firstName: String,
-  lastName: String,
-  company: {
-    name: String,
-    email: String,
-    logo: String,
-    phone: String,
-    website: String,
-    vatNumber: String,
-    kvkNumber: String,
-    bankAccount: String,
-    bankName: String,
-    address: {
-      street: String,
-      number: String,
-      postcode: String,
-      city: String
-    }
-  }
-});
-
-const UserProfile = mongoose.model('UserProfile', userProfileSchema);
-
 // Nodemailer Configuration
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -110,11 +78,6 @@ const transporter = nodemailer.createTransport({
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
-});
-
-// Routes
-app.get("/", (req, res) => {
-  res.send("Welcome to FormifyX Backend!");
 });
 
 // Signup Endpoint
@@ -167,54 +130,6 @@ app.post("/login", async (req, res) => {
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Something went wrong" });
-  }
-});
-
-// Profile Endpoints
-app.get("/api/profile", async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    const profile = await UserProfile.findOne({ userId: decoded.userId });
-
-    if (!profile) {
-      return res.status(404).json({ message: "Profile not found" });
-    }
-
-    res.status(200).json(profile);
-  } catch (error) {
-    console.error("Error fetching profile:", error);
-    res.status(500).json({ message: "Failed to fetch profile" });
-  }
-});
-
-app.put("/api/profile", async (req, res) => {
-  const token = req.headers.authorization?.split(" ")[1];
-  if (!token) {
-    return res.status(401).json({ message: "No token provided" });
-  }
-
-  try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    const profileData = req.body;
-
-    const profile = await UserProfile.findOneAndUpdate(
-      { userId: decoded.userId },
-      { 
-        userId: decoded.userId,
-        ...profileData
-      },
-      { new: true, upsert: true }
-    );
-
-    res.status(200).json(profile);
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    res.status(500).json({ message: "Failed to update profile" });
   }
 });
 
